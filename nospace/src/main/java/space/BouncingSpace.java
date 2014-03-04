@@ -1,34 +1,32 @@
 package space;
 
-import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 public class BouncingSpace extends Space  {
 
-    static boolean IS_BREAKOUT = true; // Opens bottom, only active if IS_BOUNCING_BALLS is true
-
-    @Override
-    void paintPhysicalObject(double mass, double radius, double x, double y, Graphics2D graphics) {
-        graphics.setColor(Color.WHITE);
-        int xtmp = (int) ((x - centrex)  + frame.getSize().width / 2);
-        int ytmp = (int) ((y - centrey)  + frame.getSize().height / 2);
-        graphics.fillOval(
-                (int) (xtmp - radius),
-                (int) (ytmp - radius),
-                (int) (2 * radius),
-                (int) (2 * radius));
-    }
+    static boolean IS_BREAKOUT = true; // Opens bottom
 
     public static void main(String[] args) throws InterruptedException, InvocationTargetException {
-        final BouncingSpace space = new BouncingSpace();
-        space.init();
+        new BouncingSpace();
+    }
+
+    @Override
+    void paintPhysicalObject(double mass, double radius, double x, double y, GeneralGraphics2D gfx) {
+        graphicsSupport.setWhiteColor(gfx);
+        int xtmp = (int) ((x - centrex)  + graphicsSupport.getDimensionWidth() / 2);
+        int ytmp = (int) ((y - centrey)  + graphicsSupport.getDimensionHeight() / 2);
+        graphicsSupport.fillOval(gfx,
+                (int) (xtmp - radius),
+                (int) (ytmp - radius),
+                (int) (2 * radius));
     }
 
     @Override
     void setupVariables() {
+        graphicsSupport.setMouseWheelEnabled(false);
+        graphicsSupport.setMouseDraggedEnabled(false);
+
         nrOfObjects = 50;
         setStepSize(1); // One second per iteration
         for (int i = 0; i < nrOfObjects; i++) {
@@ -77,15 +75,5 @@ public class BouncingSpace extends Space  {
         if (distance < collsionDistance) {
             one.hitBy(other, seconds);
         }
-    }
-
-    @Override
-    public void mouseWheelMoved(final MouseWheelEvent e) {
-        //NOOP
-    }
-
-    @Override
-    public void mouseDragged(final MouseEvent e) {
-        //NOOP
     }
 }

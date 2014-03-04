@@ -1,33 +1,31 @@
 package space;
 
-import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 public class NormalSpace extends Space {
 
-    @Override
-    void paintPhysicalObject(double mass, double radius, double x, double y, Graphics2D graphics) {
-        graphics.setColor(weightToColor(mass));
-        int diameter = mass >= EARTH_WEIGHT * 10000 ? 7 : 2;
-        int xtmp = (int) ((x - centrex) / scale + frame.getSize().width / 2);
-        int ytmp = (int) ((y - centrey) / scale + frame.getSize().height / 2);
-        graphics.fillOval(
-                xtmp-diameter/2,
-                ytmp-diameter/2,
-                diameter,
-                diameter);
+    public static void main(String[] args) throws InterruptedException, InvocationTargetException {
+        new NormalSpace();
     }
 
-    public static void main(String[] args) throws InterruptedException, InvocationTargetException {
-        final NormalSpace space = new NormalSpace();
-        space.init();
+    @Override
+    void paintPhysicalObject(double mass, double radius, double x, double y, GeneralGraphics2D gfx) {
+        graphicsSupport.setColorByMass(gfx, mass);
+        int diameter = mass >= EARTH_WEIGHT * 10000 ? 7 : 2;
+        int xtmp = (int) ((x - centrex) / scale + graphicsSupport.getDimensionWidth() / 2);
+        int ytmp = (int) ((y - centrey) / scale + graphicsSupport.getDimensionHeight() / 2);
+        graphicsSupport.fillOval(gfx,
+                xtmp - diameter / 2,
+                ytmp - diameter / 2,
+                diameter);
     }
 
     @Override
     void setupVariables() {
+        graphicsSupport.setMouseWheelEnabled(true);
+        graphicsSupport.setMouseDraggedEnabled(true);
+
         setStepSize(3600 * 24 * 7);
 
         double outerLimit = ASTRONOMICAL_UNIT * 20;
@@ -45,7 +43,7 @@ public class NormalSpace extends Space {
             add(weightKilos, x, y, vx, vy, 1);
         }
 
-        scale = outerLimit / getWidth();
+        scale = outerLimit / graphicsSupport.getComponentWidth();
 
         add(EARTH_WEIGHT * 20000, 0, 0, 0, 0, 1);
     }
@@ -87,20 +85,4 @@ public class NormalSpace extends Space {
         }
     }
 
-    @Override
-    public void mouseWheelMoved(final MouseWheelEvent e) {
-        scale = scale + scale * (Math.min(9, e.getWheelRotation())) / 10 + 0.0001;
-        getGraphics().clearRect(0, 0, getWidth(), getHeight());
-    }
-
-    @Override
-    public void mouseDragged(final MouseEvent e) {
-        if (lastDrag == null) {
-            lastDrag = e.getPoint();
-        }
-        centrex = centrex - ((e.getX() - lastDrag.x) * scale);
-        centrey = centrey - ((e.getY() - lastDrag.y) * scale);
-        lastDrag = e.getPoint();
-        getGraphics().clearRect(0, 0, getWidth(), getHeight());
-    }
 }
