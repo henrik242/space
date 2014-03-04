@@ -8,13 +8,13 @@ public class TestGravitation {
 
     @Test
     public void gravitationalFormulaIsCorrect() throws Exception {
-        Space s = new Space();
+        Space s = new NormalSpace();
         s.setStepSize(1);
         double earthsWeight = 5.9736e24;
         int earthsRadius = 6371000;
-        PhysicalObject earth = Space.add(earthsWeight, 0, -earthsRadius, 0, 0, 1);
-        PhysicalObject lump = Space.add(1, 0, 10, 0, 0, 1);
-        Space.IS_BOUNCING_BALLS = false;
+        PhysicalObject earth = s.add(earthsWeight, 0, -earthsRadius, 0, 0, 1);
+        PhysicalObject lump = s.add(1, 0, 10, 0, 0, 1);
+
         s.step();
         assertEquals(10 - 9.82 / 2, lump.y, 0.02);
         assertEquals(-9.82, lump.vy, 0.02);
